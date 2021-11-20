@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html lang = 'en'>
+    <head>
+        <meta charset="UTF-8">
+        <title>Welcome</title>
+    </head>
+    <body>
+        <h1>{{ content1 }}</h1>
+        <h2>{{ content2 }}</h2>
+        <h3>{{ content3 }}</h3>
+        <p>{{ content4 }}</p>
+
+        <label for="stock">Choose a company:</label>
+            <select name="stock" id="stock">
+                <option value="GOOG">Alphabet Inc.</option>
+                <option value="AMZN">Amazon.com Inc.</option>
+                <option value="AAPL">Apple Inc.</option>
+                <option value="FB">Meta Platforms, Inc.</option>
+                <option value="MSFT">Microsoft Corporation</option>
+                <option value="NFLX">Netflix, Inc.</option>
+            </select>
+
+            <!-- <form action="" method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Create" />
+            </form> -->
+
+            <button><a href="/stock">Go!</a></button>
+
+
+            
+
+    </body>
+</html>
