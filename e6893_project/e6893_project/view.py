@@ -1,5 +1,15 @@
-from django.http import request
+from django.http import request, response
+from django.http import HttpResponse
 from django.shortcuts import render
+
+import yfinance as yf
+import numpy as np
+import pandas as pd
+
+from datetime import datetime, timedelta
+from textwrap import dedent
+import time
+
 
 def welcome(request):
     context = {}
@@ -8,19 +18,75 @@ def welcome(request):
     context['content3'] = 'Created by Shambhavi Roy, Saravanan Govindarajan, and Rahul Lokesh'
     context['content4'] = """This is a personalized company research dashboard to help you understand the company of your choice in the US stock market. 
                             For your selection of company, our tool will help you see the current stock market price, current trending videos, and real-time sentiment through tweets."""
+    
+    context['content5'] = 'You have selected company:'
+
+    # print(request.POST.get('stock'))
+    # stock_wanted = request.POST.get('stock')
+
+    # context['content6'] = stock_wanted
+
+    # get ticker from form - tried AAPL as example
+    ticker = 'AAPL'
+    tick = yf.Ticker(ticker)
+    tick_hist = tick.history(period = '1d', interval = '1m')
+
+    # get open, high, low, close, volume
+    context['date'] = tick_hist.index[-1]
+    context['open'] = tick_hist['Open'].iloc[-1]
+    context['high'] = tick_hist['High'].iloc[-1]
+    context['low'] = tick_hist['Low'].iloc[-1]
+    context['close'] = tick_hist['Close'].iloc[-1]
+    context['volume'] = tick_hist['Volume'].iloc[-1]
+
     return render(request, 'welcome.html', context)
+
+
+# def get_yahoo(request):
+#     # checking yfinance
+#     context = {}
+
+#     # get ticker from form - tried AAPL as example
+#     ticker = 'AAPL'
+#     tick = yf.Ticker(ticker)
+#     tick_hist = tick.history(period = '1d', interval = '1m')
+
+#     # get open, high, low, close, volume
+#     context['date'] = tick_hist.index[-1]
+#     context['open'] = tick_hist['Open'].iloc[-1]
+#     context['high'] = tick_hist['High'].iloc[-1]
+#     context['low'] = tick_hist['Low'].iloc[-1]
+#     context['close'] = tick_hist['Close'].iloc[-1]
+#     context['volume'] = tick_hist['Volume'].iloc[-1]
+
+#     return render(request, 'welcome.html', context) 
+
+
 
 def stock(request):
     # function to retrieve youtube videos from API call
     context = {}
-    context['content1'] = 'Stock Information'
+    context['content1'] = 'Relevant Youtube Videos'
+    
+    # how to get response from form to a different page?
+    print(request.POST.get('stock'))
+    stock_wanted = request.POST.get('stock')
+    context['content2'] = stock_wanted
+        
     return render(request, 'stock.html', context)
 
-# class CreateMyModelView(request):
-#     model = MyModel
-#     form_class = MyModelForm
-#     template_name = 'myapp/template.html'
-#     success_url = 'myapp/success.html'
+
+
+
+    # choice = request.POST.get('stock', False)
+
+    # context = {}
+    # context['content1'] = 'Stock Information'
+
+    # context['content2'] = 'You have selected company:'
+    # context['content3'] = choice
+    # return render(request, 'stock.html', {'stock':choice})
+
 
 
 def get_videos(request):
@@ -38,7 +104,7 @@ def get_videos(request):
     #   https://cloud.google.com/console
     # Please ensure that you have enabled the YouTube Data API for your project.
 
-    DEVELOPER_KEY = 'REPLACE_ME'
+    DEVELOPER_KEY = 'AIzaSyAovYYRq5qG_caQTp9lzQQWTsxLyFSAufY'
     YOUTUBE_API_SERVICE_NAME = 'youtube'
     YOUTUBE_API_VERSION = 'v3'
 
