@@ -21,7 +21,7 @@
                 <option value="NFLX">Netflix, Inc.</option>
             </select> -->
 
-        <form method = "POST" action = "{% url 'stock' %}" >
+        <form method = "POST" action = "youtube" id="systemForm">
             <label for="stock">Choose a company:</label>
             <select name="stock" id="stock" action="post" id="mySelect" onChange="document.getElementById('selectedValue').innerHTML = this.value;">
                 <option disabled = "true" selected>-- Select a company --</option>
@@ -47,13 +47,13 @@
             <p> Volume: {{ volume }} </p>
             <hr/>
                 
-            <button><a href="/stock">Watch relevant YouTube videos!</a></button>
+            <button><a href="/youtube">Watch relevant YouTube videos!</a></button>
 
 
-            <button><a href="/stock">See trends on Twitter!</a></button>
+            <button><a href="/twitter">See trends on Twitter!</a></button>
 
 
-            
+            <!-- <h3>{{ content7 }} </h3> -->
 
     </body>
 </html>

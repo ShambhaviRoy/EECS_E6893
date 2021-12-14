@@ -1,7 +1,7 @@
 from django.http import request, response
 from django.http import HttpResponse
 from django.shortcuts import render
-
+import requests
 import yfinance as yf
 import numpy as np
 import pandas as pd
@@ -22,9 +22,9 @@ def welcome(request):
     context['content5'] = 'You have selected company:'
 
     # print(request.POST.get('stock'))
-    # stock_wanted = request.POST.get('stock')
+    stock_wanted = request.POST.get('stock')
 
-    # context['content6'] = stock_wanted
+    context['content6'] = stock_wanted
 
     # get ticker from form - tried AAPL as example
     ticker = 'AAPL'
@@ -38,6 +38,8 @@ def welcome(request):
     context['low'] = tick_hist['Low'].iloc[-1]
     context['close'] = tick_hist['Close'].iloc[-1]
     context['volume'] = tick_hist['Volume'].iloc[-1]
+
+    # context['content7'] = 'Relevant YouTube Videos'
 
     return render(request, 'welcome.html', context)
 
@@ -63,36 +65,18 @@ def welcome(request):
 
 
 
-def stock(request):
+def youtube(request):
     # function to retrieve youtube videos from API call
     context = {}
-    context['content1'] = 'Relevant Youtube Videos'
+    context['content1'] = 'Relevant YouTube Videos'
+    context['content2'] = 'Links to found YouTube videos:'
+    context['content3'] = 'Videos are attached one-by-one in embedding. Keep watching...'
     
     # how to get response from form to a different page?
-    print(request.POST.get('stock'))
-    stock_wanted = request.POST.get('stock')
-    context['content2'] = stock_wanted
-        
-    return render(request, 'stock.html', context)
+    # print(request.POST.get('stock'))
+    stock_wanted = request.POST.get('stock', None)
+    context['company'] = str(stock_wanted)
 
-
-
-
-    # choice = request.POST.get('stock', False)
-
-    # context = {}
-    # context['content1'] = 'Stock Information'
-
-    # context['content2'] = 'You have selected company:'
-    # context['content3'] = choice
-    # return render(request, 'stock.html', {'stock':choice})
-
-
-
-def get_videos(request):
-    # function to retrieve youtube videos from API call
-    context = {}
-    # context['content1'] = 'Stock Information'
     import argparse
 
     from googleapiclient.discovery import build
@@ -115,7 +99,7 @@ def get_videos(request):
     # Call the search.list method to retrieve results matching the specified
     # query term q.
     search_response = youtube.search().list(
-        q='Apple (AAPL)',
+        q='Apple+news+(AAPL)',
         part='id, snippet',
         relevanceLanguage = 'en',
         maxResults=10
@@ -126,6 +110,7 @@ def get_videos(request):
     channels = []
     playlists = []
     video_urls = []
+    video_ids = []
     url = ''
 
     # Add each result to the appropriate list, and then display the lists of
@@ -135,8 +120,11 @@ def get_videos(request):
             videos.append('%s (%s)' % (search_result['snippet']['title'],
                                     search_result['id']['videoId']))
             url = 'https://www.youtube.com/watch?v=' + str(search_result['id']['videoId'])
+            # url = 'https://www.youtube.com/embed/' + str(search_result['id']['videoId'])
+
             print('URL:', url)
             video_urls.append(url)
+            video_ids.append(str(search_result['id']['videoId']))
         elif search_result['id']['kind'] == 'youtube#channel':
             channels.append('%s (%s)' % (search_result['snippet']['title'],
                                     search_result['id']['channelId']))
@@ -144,11 +132,108 @@ def get_videos(request):
             playlists.append('%s (%s)' % (search_result['snippet']['title'],
                                         search_result['id']['playlistId']))
         # url = 'https://www.youtube.com/watch?v=${result.id.videoId}'
-        
+
+    context['url0'] = 'https://www.youtube.com/embed/'+ video_ids[0] + '?playlist="'
+
+    for i in range(1, len(video_ids)):
+        if i == len(video_ids)-1:
+            context['url0'] += video_ids[i] + '"'
+        else:
+            context['url0'] += video_ids[i] + ','
+
+
+    for i in range(len(video_urls)):
+        context['link' + str(i)] = videos[i]
+     
 
     print ('Videos:\n', '\n'.join(videos), '\n')
     #   print ('Channels:\n', '\n'.join(channels), '\n')
     #   print ('Playlists:\n', '\n'.join(playlists), '\n')
     # return video_urls
 
-    return render(request, 'stock.html', context)
+    return render(request, 'youtube.html', context)
+
+        
+
+def twitter(request):
+    # function to retrieve youtube videos from API call
+    context = {}
+    context['content1'] = 'Relevant YouTube Videos'
+
+    choice = request.POST.get('stock', None)
+
+    # context = {}
+    # context['content1'] = 'Stock Information'
+
+    context['content2'] = choice
+    # context['content3'] = choice
+    return render(request, 'twitter.html', context)
+
+
+
+# def get_videos(request):
+#     # function to retrieve youtube videos from API call
+#     context = {}
+#     # context['content1'] = 'Stock Information'
+#     import argparse
+
+#     from googleapiclient.discovery import build
+#     from googleapiclient.errors import HttpError
+
+
+#     # Set DEVELOPER_KEY to the API key value from the APIs & auth > Registered apps
+#     # tab of
+#     #   https://cloud.google.com/console
+#     # Please ensure that you have enabled the YouTube Data API for your project.
+
+#     DEVELOPER_KEY = 'AIzaSyAovYYRq5qG_caQTp9lzQQWTsxLyFSAufY'
+#     YOUTUBE_API_SERVICE_NAME = 'youtube'
+#     YOUTUBE_API_VERSION = 'v3'
+
+#     # def youtube_search(company):
+#     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+#         developerKey=DEVELOPER_KEY)
+
+#     # Call the search.list method to retrieve results matching the specified
+#     # query term q.
+#     search_response = youtube.search().list(
+#         q='Apple (AAPL)',
+#         part='id, snippet',
+#         relevanceLanguage = 'en',
+#         maxResults=10
+#         # maxResults=options.max_results
+#     ).execute()
+
+#     videos = []
+#     channels = []
+#     playlists = []
+#     video_urls = []
+#     url = ''
+
+#     # Add each result to the appropriate list, and then display the lists of
+#     # matching videos, channels, and playlists.
+#     for search_result in search_response.get('items', []):
+#         if search_result['id']['kind'] == 'youtube#video':
+#             videos.append('%s (%s)' % (search_result['snippet']['title'],
+#                                     search_result['id']['videoId']))
+#             url = 'https://www.youtube.com/watch?v=' + str(search_result['id']['videoId'])
+#             print('URL:', url)
+#             video_urls.append(url)
+#         elif search_result['id']['kind'] == 'youtube#channel':
+#             channels.append('%s (%s)' % (search_result['snippet']['title'],
+#                                     search_result['id']['channelId']))
+#         elif search_result['id']['kind'] == 'youtube#playlist':
+#             playlists.append('%s (%s)' % (search_result['snippet']['title'],
+#                                         search_result['id']['playlistId']))
+#         # url = 'https://www.youtube.com/watch?v=${result.id.videoId}'
+
+#     for i in range(len(video_urls)):
+#         context['url' + str(i)] = video_urls[i]
+        
+
+#     print ('Videos:\n', '\n'.join(videos), '\n')
+#     #   print ('Channels:\n', '\n'.join(channels), '\n')
+#     #   print ('Playlists:\n', '\n'.join(playlists), '\n')
+#     # return video_urls
+
+#     return render(request, 'stock.html', context)

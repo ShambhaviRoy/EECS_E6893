@@ -20,7 +20,8 @@ from . import view
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', view.welcome, name='stock'),
+    path('', view.welcome, name='welcome'),
     # path('showlist/', view.showlist, name='showlist'),
-    path('stock/', view.stock, name = 'stock')
+    path('youtube/', view.youtube, name = 'youtube'),
+    path('twitter/', view.twitter, name = 'twitter')
 ]
