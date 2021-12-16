@@ -168,6 +168,7 @@ def youtube(request):
     video_urls = []
     video_ids = []
     url = ''
+    # embed_url = ''
 
     # Add each result to the appropriate list, and then display the lists of
     # matching videos, channels, and playlists.
@@ -176,36 +177,35 @@ def youtube(request):
             videos.append('%s (%s)' % (search_result['snippet']['title'],
                                     search_result['id']['videoId']))
             url = 'https://www.youtube.com/watch?v=' + str(search_result['id']['videoId'])
-            # url = 'https://www.youtube.com/embed/' + str(search_result['id']['videoId'])
-
             print('URL:', url)
+            print(video_urls)
             video_urls.append(url)
+
             video_ids.append(str(search_result['id']['videoId']))
+        
         elif search_result['id']['kind'] == 'youtube#channel':
             channels.append('%s (%s)' % (search_result['snippet']['title'],
                                     search_result['id']['channelId']))
+        
         elif search_result['id']['kind'] == 'youtube#playlist':
             playlists.append('%s (%s)' % (search_result['snippet']['title'],
                                         search_result['id']['playlistId']))
-        # url = 'https://www.youtube.com/watch?v=${result.id.videoId}'
 
-    context['url0'] = 'https://www.youtube.com/embed/'+ video_ids[0] + '?playlist="'
+    context['embed_url'] = 'https://www.youtube.com/embed/'+ video_ids[0] + '?playlist="'
 
     for i in range(1, len(video_ids)):
         if i == len(video_ids)-1:
-            context['url0'] += video_ids[i] + '"'
+            context['embed_url'] += video_ids[i] + '"'
         else:
-            context['url0'] += video_ids[i] + ','
+            context['embed_url'] += video_ids[i] + ','
 
-
+    
     for i in range(len(video_urls)):
-        context['link' + str(i)] = videos[i]
+        context['video' + str(i)] = videos[i]
+        context['url' + str(i)] = video_urls[i]
      
 
     print ('Videos:\n', '\n'.join(videos), '\n')
-    #   print ('Channels:\n', '\n'.join(channels), '\n')
-    #   print ('Playlists:\n', '\n'.join(playlists), '\n')
-    # return video_urls
 
     return render(request, 'youtube.html', context)
 
