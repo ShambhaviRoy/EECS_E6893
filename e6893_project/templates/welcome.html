@@ -21,9 +21,10 @@
                 <option value="NFLX">Netflix, Inc.</option>
             </select> -->
 
-        <form method = "POST" action = "youtube" id="systemForm">
+        <form method = "POST" action = "{% url 'youtube'}" id="systemForm">
+            {% csrf_token %}
             <label for="stock">Choose a company:</label>
-            <select name="stock" id="stock" action="post" id="mySelect" onChange="document.getElementById('selectedValue').innerHTML = this.value;">
+            <select name="stock" action="POST" id="mySelect" onChange="document.getElementById('selectedValue').innerHTML = this.value;">
                 <option disabled = "true" selected>-- Select a company --</option>
                 <option>Alphabet Inc. (GOOG)</option>
                 <option>Amazon.com Inc. (AMZN)</option>

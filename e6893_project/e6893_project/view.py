@@ -1,7 +1,3 @@
-from django.http import request, response
-from django.http import HttpResponse
-from django.shortcuts import render
-import requests
 import yfinance as yf
 import numpy as np
 import pandas as pd
@@ -9,6 +5,71 @@ import pandas as pd
 from datetime import datetime, timedelta
 from textwrap import dedent
 import time
+
+import tweepy
+from tweepy import Stream
+from tweepy import OAuthHandler
+from tweepy import Stream
+# from tweepy.streaming import StreamListener
+import socket 
+import json
+
+from django.conf import settings
+from django.http import request, response
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+import requests
+
+
+class TweetsListener(Stream):
+    """
+    tweets listener object
+    """
+    def __init__(self, csocket):
+        self.client_socket = csocket
+    def on_data(self, data):
+        try:
+            msg = json.loads( data )
+            print('TEXT:{}\n'.format(msg['text']))
+            self.client_socket.send( msg['text'].encode('utf-8') )
+            return True
+        except BaseException as e:
+            print("Error on_data: %s" % str(e))
+            return False
+        # return True
+    def on_error(self, status):
+        print(status)
+        return False
+
+def sendData(c_socket, tags):
+    """
+    send data to socket
+    """
+    auth = OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+    auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_SECRET)
+    twitter_stream = Stream(auth, TweetsListener(c_socket))
+    twitter_stream.filter(track=tags,languages=['en'])
+
+
+class twitter_client:
+    def __init__(self, TCP_IP, TCP_PORT):
+      self.s = s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      self.s.bind((TCP_IP, TCP_PORT))
+
+    def run_client(self, tags):
+      try:
+        self.s.listen(1)
+        while True:
+          print("Waiting for TCP connection...")
+          conn, addr = self.s.accept()
+          print("Connected... Starting getting tweets.")
+          sendData(conn,tags)
+          conn.close()
+      except KeyboardInterrupt:
+        exit
+
+
+
 
 
 def welcome(request):
@@ -21,25 +82,42 @@ def welcome(request):
     
     context['content5'] = 'You have selected company:'
 
-    # print(request.POST.get('stock'))
-    stock_wanted = request.POST.get('stock')
+    
+    if request.method == 'POST':
+        stock_wanted = request.POST.get('stock')
+        context['content6'] = stock_wanted
+        return render(request, 'welcome.html', context)
 
-    context['content6'] = stock_wanted
 
-    # get ticker from form - tried AAPL as example
-    ticker = 'AAPL'
-    tick = yf.Ticker(ticker)
-    tick_hist = tick.history(period = '1d', interval = '1m')
+    else:
+        stock_ticker_dict = {'Alphabet Inc. (GOOG)' : 'GOOG', 
+                            'Amazon.com Inc. (AMZN)' : 'AMZN', 
+                            'Apple Inc. (AAPL)': 'AAPL',
+                            'Meta Platforms, Inc. (FB)' : 'FB',
+                            'Microsoft Corporation (MSFT)': 'MSFT',
+                            'Netflix, Inc. (NFLX)': 'NFLX',
+                            None: 'AAPL'}
 
-    # get open, high, low, close, volume
-    context['date'] = tick_hist.index[-1]
-    context['open'] = tick_hist['Open'].iloc[-1]
-    context['high'] = tick_hist['High'].iloc[-1]
-    context['low'] = tick_hist['Low'].iloc[-1]
-    context['close'] = tick_hist['Close'].iloc[-1]
-    context['volume'] = tick_hist['Volume'].iloc[-1]
+        # get ticker from form - tried AAPL as example
+        ticker = 'AAPL'
+        tick = yf.Ticker(ticker)
+        tick_hist = tick.history(period = '1d', interval = '1m')
 
-    return render(request, 'welcome.html', context)
+        # get open, high, low, close, volume
+        context['date'] = tick_hist.index[-1]
+        context['open'] = tick_hist['Open'].iloc[-1]
+        context['high'] = tick_hist['High'].iloc[-1]
+        context['low'] = tick_hist['Low'].iloc[-1]
+        context['close'] = tick_hist['Close'].iloc[-1]
+        context['volume'] = tick_hist['Volume'].iloc[-1]
+
+        return render(request, 'welcome.html', context)
+
+
+
+    
+
+    
 
 
 
@@ -47,7 +125,7 @@ def youtube(request):
     # function to retrieve youtube videos from API call
     context = {}
     context['content1'] = 'Relevant YouTube Videos'
-    context['content2'] = 'Links to found YouTube videos:'
+    context['content2'] = 'Look up on YouTube:'
     context['content3'] = 'Videos are attached one-by-one in embedding. Keep watching...'
     
     # how to get response from form to a different page?
@@ -66,7 +144,7 @@ def youtube(request):
     #   https://cloud.google.com/console
     # Please ensure that you have enabled the YouTube Data API for your project.
 
-    DEVELOPER_KEY = "INSERT DEVELOPER_KEY HERE"
+    DEVELOPER_KEY = 'AIzaSyAovYYRq5qG_caQTp9lzQQWTsxLyFSAufY'
     YOUTUBE_API_SERVICE_NAME = 'youtube'
     YOUTUBE_API_VERSION = 'v3'
 
@@ -134,18 +212,35 @@ def youtube(request):
         
 
 def twitter(request):
-    # function to retrieve youtube videos from API call
+    # function to retrieve tweets from Twitter API call
     context = {}
-    context['content1'] = 'Relevant YouTube Videos'
+    context['content1'] = 'Relevant Tweets'
 
-    choice = request.POST.get('stock', None)
+    # if request.method == 'POST':
+    #     company = request.POST.get('stock', None)
+    # context['content2'] = company
 
-    # context = {}
-    # context['content1'] = 'Stock Information'
+    # company = request.POST.get('stock', None)
 
-    context['content2'] = choice
-    # context['content3'] = choice
+    # company = 'AAPL'
+
+    # if company:
+    #     auth = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+    #     auth.set_access_token(settings.ACCESS_TOKEN, settings.ACCESS_SECRET)
+
+    #     api = tweepy.API(auth)
+    #     api.update_status(company)
+
+    tags = ['Apple', 'AAPL', 'news']
+    client = twitter_client("localhost", 9003)
+    client.run_client(tags)
+
+
+
+
+
     return render(request, 'twitter.html', context)
+
 
 
 

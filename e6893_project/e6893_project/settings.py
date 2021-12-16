@@ -28,6 +28,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Twitter API Credentials
+ACCESS_TOKEN = '1448114693042810887-Idk8vklKgKmITw8UEHJLQRuiyTWmov'     # your access token
+ACCESS_SECRET = 've93n7eLVU01CEHhhwF0jBRS5jPxmz1nkcZ4CzYkPwYPq'    # your access token secret
+CONSUMER_KEY = 'lEjkrFHS4bMusemTMRC5l0lVZ'     # your API key
+CONSUMER_SECRET = '5dBAMYebVehoJHvRcVReBDGS0uq5Hx4gqMdWQWhkrCFwtTcbGg'  # your API secret key 
+
+
 
 # Application definition
 
