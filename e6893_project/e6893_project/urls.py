@@ -21,6 +21,8 @@ from . import view
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', view.welcome, name='welcome'),
+    path('tweet/', view.show, name='twit'),
+    path('tweet/hit', view.prediction),
     # path('showlist/', view.showlist, name='showlist'),
     path('youtube/', view.youtube, name = 'youtube'),
     path('twitter/', view.twitter, name = 'twitter')
