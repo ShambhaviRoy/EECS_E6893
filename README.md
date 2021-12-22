@@ -2,9 +2,9 @@
 Big Data Analytics Project: Personalized Company Research Dashboard (Group 46)
 
 ## Contributors- Group 46
-<br> Shambhavi Roy (sr3767)
-Saravanan Govindarajan (sg3896)
-Rahul Lokesh (rl3164) </br>
+<br> Shambhavi Roy (sr3767)</br>
+<br> Saravanan Govindarajan (sg3896)</br>
+<br> Rahul Lokesh (rl3164) </br>
 
 ## Abstract
 <p> Stock market investors often require guidance in understanding current market conditions to make wise investment decisions. Our project addresses this concern and is aimed to provide users with centralized dashboard access to understand a company's current market condition using big data principles. For a given company name as user input, we seek to provide to its stock market information, relevant current YouTube videos, and real-time sentiment of its stock in the market. Having access to these three modalities of data with sentiment analysis would be useful for traders to conduct market research on a specific company in depth. </p>
