@@ -7,7 +7,7 @@ import argparse
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-DEVELOPER_KEY = 'AIzaSyAa32vNGpdSYJhQapB1vQ0QqPiKaOqJMF8'
+DEVELOPER_KEY = ''
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 
