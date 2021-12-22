@@ -83,10 +83,11 @@ class TwitterForm(forms.Form):
 
 class TwitterSentClass():
     def __init__(self):
-        API_key = 'AYvwzyzAPvCTVsXNloCaXYXk2'
-        API_secret = 'iJUrV2rnxryD0XNXk2lQiWzzzFjIcpLSX9PktuH6D2RJ4fLJHh'
-        access_token = '1448114693042810887-U1jCDPzYdETHDDEOzWu242mfcaj9aA'
-        access_token_secret = 'n7s7nkUe6yjuUdLWw0xoVDgWAJkOBuj3mPHrskA0dmPl4'
+        # removed API keys for security
+        API_key = ''
+        API_secret = ''
+        access_token = ''
+        access_token_secret = ''
         try:
             self.auth = OAuthHandler(API_key, 
                                      API_secret)
